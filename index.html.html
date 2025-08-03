@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Staggered Scroll Animations</title>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* NAVIGATION */
+    nav {
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 999;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      transition: all 0.3s ease;
+    }
+
+    nav.shrink {
+      padding: 10px 30px;
+      background: rgba(0, 0, 0, 0.85);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .logo {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 25px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #ff5a00;
+    }
+
+    .nav-links .contact-btn {
+      padding: 8px 16px;
+      background-color: #ff5a00;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-weight: bold;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .nav-links .contact-btn:hover {
+      background-color: #e64a00;
+      transform: scale(1.05);
+    }
+
+    /* HERO SECTION */
+    .hero {
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+  transition: background-image 1s ease-in-out;
+}
+
+
+    .hero .stagger {
+      text-shadow: 2px 2px 10px #000;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: bold;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+
+    .hero a {
+      text-decoration: none;
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 1rem;
+      background-color: #ff5a00;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+    }
+
+    .hero a:hover {
+      background-color: #e64a00;
+      transform: scale(1.05);
+      transition: 0.3s;
+    }
+
+    /* SECTIONS */
+    section {
+      padding: 100px 30px;
+      min-height: 100vh;
+    }
+
+    #about { background: #fefefe; }
+    #shop { background: #f7f7f7; }
+    #contact { background: #fff5e6; }
+
+    /* BACK TO TOP BUTTON */
+    #backToTop {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #ff5a00;
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: none;
+      z-index: 999;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s;
+    }
+
+    #backToTop:hover {
+      transform: scale(1.1);
+    }
+
+    /* STAGGERED ANIMATIONS */
+    .stagger {
+      opacity: 0;
+      transform: translateX(-100px);
+      transition: all 0.6s ease-out;
+    }
+
+    .stagger.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .stagger.hide {
+      opacity: 0;
+      transform: translateX(100px);
+    }
+
+    .stagger:nth-child(1) {
+      transition-delay: 0s;
+    }
+
+    .stagger:nth-child(2) {
+      transition-delay: 0.2s;
+    }
+
+    .stagger:nth-child(3) {
+      transition-delay: 0.4s;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .nav-links {
+        gap: 15px;
+      }
+    }
+    .product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.product-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.product-card img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  object-position: center center;
+}
+
+
+.product-card h3 {
+  font-size: 1.3rem;
+  margin: 10px 0 5px;
+  color: #333;
+}
+
+.product-card p {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.product-card span {
+  display: inline-block;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #ff5a00;
+  font-size: 1.1rem;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+.add-to-cart {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #ff5a00;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.add-to-cart:hover {
+  background-color: #e64a00;
+  transform: scale(1.05);
+}
+.custom-order-section {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.custom-order-btn {
+  background-color: #222;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.custom-order-btn:hover {
+  background-color: #444;
+}
+
+/* Modal Styles */
+/* Modal Overlay */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.65);
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal Box */
+.modal-content {
+  background-color: #fff;
+  width: 90%;
+  max-width: 450px;
+  padding: 30px 25px;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+  text-align: left;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.modal-content p {
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+/* Textarea Style */
+.modal-content textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  resize: none;
+  font-family: inherit;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.modal-content textarea:focus {
+  border-color: #ff5a00;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 90, 0, 0.2);
+}
+
+/* Submit Button */
+.modal-content button {
+  background-color: #ff5a00;
+  color: white;
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.modal-content button:hover {
+  background-color: #e64a00;
+  transform: scale(1.02);
+}
+
+/* Close Button (X) */
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close-btn:hover {
+  color: #ff5a00;
+}
+
+/* Modal Entrance Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+
+.modal-content h3 {
+  margin-bottom: 15px;
+}
+
+.modal-content textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  resize: none;
+}
+
+.modal-content button {
+  background-color: #ff5a00;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background-color: #e64a00;
+}
+
+.close-btn {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+  color: #aaa;
+}
+.cart-panel {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 350px;
+  height: 100%;
+  background: white;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+  z-index: 99999;
+  transition: right 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.cart-panel.open {
+  right: 0;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.cart-header h3 {
+  margin: 0;
+}
+
+.close-cart {
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.cart-items {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px 0;
+}
+
+.cart-items .item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.cart-items .item span {
+  font-size: 0.95rem;
+}
+
+.cart-footer {
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+  text-align: left;
+}
+
+.cart-footer button {
+  margin-top: 10px;
+  background-color: #ff5a00;
+  border: none;
+  padding: 10px 15px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+}
+#toast-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  background-color: #333;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  font-size: 0.95rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: toastIn 0.3s forwards, toastOut 0.3s 3s forwards;
+}
+
+@keyframes toastIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toastOut {
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+.customer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.customer-info input {
+  padding: 10px;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+#about {
+  padding: 60px 20px;
+  background: #f9f5f2;
+  color: #333;
+  text-align: center;
+}
+
+#about h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #ff5a00;
+}
+
+#about p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto 15px auto;
+}
+#about h2 {
+  color: #ff5a00;
+  margin-top: 40px;
+}
+section h2 {
+  font-size: 2rem;
+  color: #ff5a00;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+  position: relative;
+}
+
+section h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: #ff5a00;
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+#coming-soon {
+  background: linear-gradient(to right, #fff3e0, #ffe0b2);
+  padding: 70px 20px;
+  text-align: center;
+  border-radius: 20px;
+  margin: 40px auto;
+  max-width: 1000px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.coming-soon-content h2 {
+  font-size: 2.3rem;
+  color: #cc5200;
+  margin-bottom: 15px;
+}
+
+.coming-soon-content .subtitle {
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto 20px auto;
+  color: #5a3e28;
+}
+
+.launch-badge {
+  display: inline-block;
+  background-color: #ff5a00;
+  color: white;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  border-radius: 30px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  animation: pulse 1.5s infinite ease-in-out;
+  margin-bottom: 20px;
+}
+
+.notify-btn {
+  display: inline-block;
+  background-color: #25d366;
+  color: white;
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.notify-btn:hover {
+  background-color: #20b858;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.85; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+#shop p{
+  align-content: center;
+  padding-left: 38%;
+}
+
+#contact {
+  padding: 60px 20px;
+  background: #fff3e0;
+  text-align: center;
+  color: #333;
+}
+
+#contact h2 {
+  font-size: 2rem;
+  color: #ff5a00;
+  margin-bottom: 20px;
+}
+
+.contact-container {
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-container a {
+  color: #ff5a00;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.contact-container a:hover {
+  text-decoration: underline;
+}
+
+.whatsapp-btn {
+  display: inline-block;
+  margin: 10px 0;
+  padding: 10px 20px;
+  background: #25d366;
+  color: white;
+  border-radius: 30px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.whatsapp-btn:hover {
+  background: #20b858;
+}
+
+.social-links {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.social-links a {
+  color: #444;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+  /* Hero Text Smaller */
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero p {
+    font-size: 0.9rem;
+  }
+
+  /* Product grid one column */
+  .product-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+
+  /* Product card max width */
+  .product-card {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Navbar stack and padding */
+  nav {
+    flex-direction: column;
+    padding: 10px 15px;
+    gap: 10px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  /* Buttons full width */
+  .add-to-cart,
+  .custom-order-btn,
+  .modal-content button {
+    width: 100%;
+  }
+
+  /* Modal content smaller width */
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+}
+.cart-icon {
+  position: relative;
+  background-color: white;
+  border-radius: 100%;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 3px;
+  padding-right: 3px;
+  font-size: 1.0rem;
+  color: red;
+}
+
+.cart-icon:hover {
+  background-color: rgba(230, 74, 0, 0.3);
+  color: green;
+  transform: scale(1.15);
+  transition: 0.3s;
+}
+
+/* Optional badge for number of items */
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #25d366; /* WhatsApp green */
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 12px;
+  pointer-events: none;
+  box-shadow: 0 0 3px rgba(0,0,0,0.15);
+}
+#shop p{
+  padding-left: 10px;
+}
+#surprising-pairings {
+  background: #fff5e6;
+  padding: 70px 30px;
+  text-align: center;
+  color: #333;
+}
+
+#surprising-pairings h2 {
+  font-size: 2rem;
+  color: #cc5200;
+  margin-bottom: 10px;
+}
+
+#surprising-pairings .author {
+  font-size: 0.95rem;
+  margin-bottom: 25px;
+  color: #777;
+}
+
+.surprising-list ul {
+  list-style: none;
+  padding: 0;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.surprising-list li {
+  background: #fff;
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.surprising-list .bonus {
+  margin-top: 
+  font-style: italic;
+  font-size: 1rem;
+  color: #555;
+}
+#testimonials {
+  background: #fffefc;
+  padding: 70px 30px;
+  text-align: center;
+  color: #333;
+}
+
+#testimonials h2 {
+  font-size: 2rem;
+  color: #ff5a00;
+  margin-bottom: 30px;
+}
+
+.screenshot-testimonials {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+.testimonial-img img {
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.testimonial-img img:hover {
+  transform: scale(1.03);
+}
+
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav id="navbar">
+    <div class="logo">Mastermade Foods</div>
+    <div class="nav-links">
+  <a href="#">Home</a>
+  <a href="#about">About</a>
+  <a href="#shop">Shop</a>
+  <button class="contact-btn" onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })">Contact</button>
+  
+  <div class="cart-icon" onclick="toggleCart()">
+    🛒
+    <span id="cart-count">0</span>
+  </div>
+</div>
+
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero scroll-animate">
+    <h1 class="stagger">Mastermade Foods.</h1>
+    <p class="stagger">Experience the best homemade dishes made with love</p>
+    <a class="stagger" href="#shop">Order Now</a>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="scroll-animate">
+    <h2 class="stagger">About Us</h2>
+    <section id="about" class="slide-in-section">
+  <h2>Our Mission</h2>
+  <p>
+    At <strong>MasterMade Foods</strong>, our mission is to provide authentic, high-quality Ghanaian <strong>Shito</strong> and nutritious <strong>Tom Brown</strong> made from natural ingredients — preserving tradition while meeting modern taste and health needs.
+  </p>
+  <p>
+    We are committed to <strong>excellence, hygiene</strong>, and <strong>customer satisfaction</strong> in every jar and pack we produce.
+  </p>
+  <h2>Our Vision</h2>
+<p>
+  To become a trusted household name across Ghana and beyond, known for delivering premium, locally-made food products that blend <strong>tradition</strong>, <strong>nutrition</strong>, and <strong>unforgettable taste</strong>. 
+</p>
+
+</section>
+
+  </section>
+  <section id="coming-soon" class="coming-soon slide-in-section">
+  <div class="coming-soon-content">
+    <h2>Something Nutritious is Coming 🍲</h2>
+    <p class="subtitle">
+      Get ready for <strong>MasterMade Tom Brown</strong> — a delicious, natural Ghanaian breakfast blend for the whole family.
+    </p>
+    <div class="launch-badge">Launching August 2025</div>
+    <a href="https://wa.me/233531720406?text=Hi!%20Please%20notify%20me%20when%20Tom%20Brown%20is%20available." class="notify-btn" target="_blank">
+      Notify Me on WhatsApp
+    </a>
+  </div>
+</section>
+
+
+
+  <!-- SHOP -->
+  <section id="shop" class="scroll-animate">
+  <h2 class="stagger">Shop Our Dishes</h2>
+  <p class="stagger">Order your favorite Mastermade Shito below.</p>
+
+  <div class="product-grid">
+    <div class="product-card stagger">
+      <img src="/images/real 350.jpg" alt="350ml Mastermade Shito">
+      <h3>350ml</h3>
+      <p>Comes with fish and meat chunks.</p>
+      <span>80 GHS</span> <br>
+      <button class="add-to-cart" onclick="addToCart('350ml Shito', 80)">Add to Cart</button>
+    </div>
+
+    <div class="product-card stagger">
+      <img src="/images/500ml.jpg" alt="500ml Mastermade Shito">
+      <h3>500ml</h3>
+      <p>Comes with fish and meat chunks.</p>
+      <span>120 GHS</span> <br>
+      <button class="add-to-cart" onclick="addToCart('500ml Shito', 120)">Add to Cart</button>
+    </div>
+
+    <div class="product-card stagger">
+      <img src="/images/1000ml.jpg" alt="1000ml Mastermade Shito">
+      <h3>1000ml</h3>
+      <p>Comes with fish and meat chunks.</p>
+      <span>200 GHS</span> <br>
+      <button class="add-to-cart" onclick="addToCart('1000ml Shito', 200)">Add to Cart</button>
+    </div>
+  </div>
+    <div class="custom-order-section">
+  <button class="custom-order-btn" onclick="openCustomOrder()">Custom Order</button>
+</div>
+ <!-- CUSTOM ORDER MODAL -->
+<div id="customModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <h3>Custom Order</h3>
+    <textarea id="customInput" placeholder="Describe what you want..." style="width:100%; height:100px;"></textarea>
+    <br />
+    <button type="button" onclick="submitCustomOrder()">Submit</button>
+  </div>
+</div>
+
+  
+</div>
+<section id="surprising-pairings">
+  <h2>5 Surprising Dishes That Taste Amazing with Shito</h2>
+  <p class="author">By <strong>MasterMade Shito</strong></p>
+  <div class="surprising-list">
+    <ul>
+      <li><strong>1. Boiled Eggs</strong> – A quick snack with serious flavor.</li>
+      <li><strong>2. Spaghetti / Indomie</strong> – Mix it in and thank us later.</li>
+      <li><strong>3. Fried Yam / Potatoes</strong> – Better than ketchup — the perfect dip.</li>
+      <li><strong>4. Bread & Avocado</strong> – Add a kick to your street snack combo.</li>
+      <li><strong>5. Grilled Chicken / Kebab</strong> – Elevates your grill game instantly.</li>
+    </ul>
+    <p class="bonus"><strong>Bonus:</strong> Try it in <em>salads, burgers, or even on pizza</em>. 🌶️</p>
+  </div>
+</section>
+  <section id="testimonials">
+  <h2>What Our Customers Are Saying</h2>
+  <div class="screenshot-testimonials">
+    <div class="testimonial-img">
+      <img src="/images/c1.jpg" alt="Customer Testimonial 1">
+    </div>
+    <div class="testimonial-img">
+      <img src="/images/c2.jpg" alt="Customer Testimonial 2">
+    </div>
+    <div class="testimonial-img">
+      <img src="/images/c3.jpg" alt="Customer Testimonial 3">
+    </div>
+  </div>
+</section>
+
+
+<div id="cart-panel" class="cart-panel">
+  <div class="cart-header">
+    <h3>Your Cart</h3>
+    <span onclick="toggleCart()" class="close-cart">&times;</span>
+  </div>
+  <div id="cart-items" class="cart-items">
+    <!-- items go here -->
+  </div>
+  <div class="cart-footer">
+    <p><strong>Total:</strong> <span id="cart-total">0 GHS</span></p>
+    <div class="customer-info">
+  <input type="text" id="customer-name" placeholder="Your Name" required>
+  <input type="text" id="customer-address" placeholder="Your Address" required>
+  <input type="tel" id="customer-phone" placeholder="Your Phone Number" required>
+</div>
+
+    <button onclick="checkoutCart()">Checkout</button>
+  </div>
+</div>
+
+   
+</section>
+
+
+  <!-- CONTACT -->
+  <section id="contact" class="scroll-animate">
+    <h2 class="stagger">Let's Get In Touch</h2>
+    <p class="stagger">Reach out via phone or WhatsApp.</p>
+    <p class="stagger">Good food, MasterMade!</p>
+
+    <section id="contact" class="slide-in-section">
+  <h2>Contact Us</h2>
+
+  <div class="contact-container">
+    <p><strong>Call or WhatsApp:</strong> <a href="tel:+233531720406">0531 720 406</a></p>
+
+    <p><strong>WhatsApp Orders:</strong>
+      <a href="https://wa.me/233531720406?text=Hello!%20I%27d%20like%20to%20order%20MasterMade%20products" target="_blank" class="whatsapp-btn">
+        Message Us on WhatsApp
+      </a>
+    </p>
+
+    <p><strong>Follow us on Social Media:</strong></p>
+    <div class="social-links">
+  <a href="https://instagram.com/mastermade_shito" target="_blank">
+    <i class="fab fa-instagram"></i>
+  </a>
+  <a href="https://facebook.com/mastermade_shito" target="_blank">
+    <i class="fab fa-facebook-f"></i>
+  </a>
+  <a href="https://tiktok.com/@mastermade_shito" target="_blank">
+    <i class="fab fa-tiktok"></i>
+  </a>
+</div>
+
+  </div>
+</section>
+
+  </section>
+
+  <!-- BACK TO TOP -->
+  <button id="backToTop" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">↑</button>
+   <div id="toast-container"></div>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    // Shrink navbar on scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('shrink', window.scrollY > 50);
+    });
+
+    // Back to top button
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      backToTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
+    });
+
+    // Staggered scroll animations
+    const groups = document.querySelectorAll('.scroll-animate');
+
+    groups.forEach(group => {
+      const elements = group.querySelectorAll('.stagger');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            elements.forEach(el => el.classList.add('show'));
+            elements.forEach(el => el.classList.remove('hide'));
+          } else {
+            elements.forEach(el => el.classList.add('hide'));
+            elements.forEach(el => el.classList.remove('show'));
+          }
+        });
+      }, { threshold: 0.3 });
+
+      observer.observe(group);
+    });
+    function openCustomOrder() {
+    document.getElementById('customModal').style.display = 'block';
+  }
+
+  function closeCustomOrder() {
+    document.getElementById('customModal').style.display = 'none';
+  }
+
+ function submitCustomOrder() {
+  const input = document.getElementById("customInput").value.trim();
+
+  if (!input) {
+    alert("Please describe your custom order first!");
+    return;
+  }
+
+  const url = "https://wa.me/233531720406?text=" + encodeURIComponent(
+    `Hello! I'd like to place a custom order:\n\n${input}`
+  );
+
+  window.open(url, "_blank");
+
+  // Optional: close modal + reset
+  closeModal();
+  document.getElementById("customInput").value = "";
+}
+
+
+
+  // Close modal if clicking outside
+  window.onclick = function(event) {
+    const modal = document.getElementById('customModal');
+    if (event.target == modal) {
+      closeCustomOrder();
+    }
+  };
+  const cart = [];
+
+  function addToCart(name, price) {
+    cart.push({ name, price });
+    updateCartDisplay();
+    showToast(`${name} added to cart!`);
+
+  }
+
+  function updateCartDisplay() {
+    document.getElementById('cart-count').textContent = cart.length;
+
+    const cartItemsContainer = document.getElementById('cart-items');
+    cartItemsContainer.innerHTML = '';
+
+    let total = 0;
+    cart.forEach((item, index) => {
+      total += item.price;
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <span>${item.name}</span>
+        <span>${item.price} GHS <button onclick="removeCartItem(${index})" style="margin-left:5px;color:red;border:none;background:none;cursor:pointer;">&times;</button></span>
+      `;
+      cartItemsContainer.appendChild(div);
+    });
+
+    document.getElementById('cart-total').textContent = `${total} GHS`;
+  }
+
+  function removeCartItem(index) {
+    cart.splice(index, 1);
+    updateCartDisplay();
+  }
+
+  function toggleCart() {
+    document.getElementById('cart-panel').classList.toggle('open');
+  }
+
+ function checkoutCart() {
+  if (cart.length === 0) {
+    showToast("Your cart is empty!");
+    return;
+  }
+
+  // Get customer info
+  const name = document.getElementById("customer-name").value.trim();
+  const address = document.getElementById("customer-address").value.trim();
+  const phone = document.getElementById("customer-phone").value.trim();
+
+  if (!name || !address || !phone) {
+    showToast("Please fill in all your details!");
+    return;
+  }
+
+  // Format order summary
+  const summaryLines = cart.map(item => `- ${item.name} — ${item.price} GHS`);
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+  const message = `Hello! I'd like to order:\n\n${summaryLines.join('\n')}\n\nTotal: ${total} GHS\n\n---\nName: ${name}\nAddress: ${address}\nPhone: ${phone}`;
+
+  // YOUR WhatsApp number (you receive this message)
+  const businessNumber = "233531720406";
+  const url = `https://wa.me/${businessNumber}?text=${encodeURIComponent(message)}`;
+
+  window.open(url, '_blank');
+}
+
+  function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  document.getElementById('toast-container').appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3500); // Match with toastOut timing
+}
+const modal = document.querySelector('.modal');
+const modalContent = document.querySelector('.modal-content');
+
+modal.addEventListener('click', (e) => {
+  // If clicked directly on the overlay (modal), close modal
+  if (e.target === modal) {
+    closeModal();
+  }
+});
+
+// Optional: add touchstart event for mobile
+modal.addEventListener('touchstart', (e) => {
+  if (e.target === modal) {
+    closeModal();
+  }
+});
+
+function closeModal() {
+  modal.style.display = 'none';
+}
+function checkStagger() {
+  const staggerElements = document.querySelectorAll('.stagger');
+  const windowHeight = window.innerHeight;
+
+  staggerElements.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    const offset = 100; // buffer in px
+
+    if (rect.top < windowHeight - offset && rect.bottom > offset) {
+      el.classList.add('show');
+      el.classList.remove('hide');
+    } else {
+      el.classList.remove('show');
+      el.classList.add('hide');
+    }
+  });
+}
+
+window.addEventListener('scroll', checkStagger);
+window.addEventListener('load', checkStagger);
+
+
+  const hero = document.querySelector('.hero');
+  const bgImages = [
+    "url('/images/mms.jpg')",
+    "url('/images/shi2.jpg')",
+    "url('/images/shi.jpg')"
+  ];
+
+  let current = 0;
+
+  function changeHeroBackground() {
+    current = (current + 1) % bgImages.length;
+    hero.style.backgroundImage = bgImages[current];
+  }
+
+  // Initial image
+  hero.style.backgroundImage = bgImages[current];
+
+  // Change image every 6 seconds
+  setInterval(changeHeroBackground, 6000);
+
+
+  </script>
+</body>
+</html>
